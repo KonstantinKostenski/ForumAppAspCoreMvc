@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Forum.Models;
 using Forum.Data;
@@ -24,6 +21,8 @@ namespace Forum.Controllers
             List<Topic> topics = this.context
                 .Topics
                 .Include(t => t.Author)
+                .Include(t => t.Comments)
+                .ThenInclude(c => c.Author)
                 .OrderByDescending(t => t.CreatedDate)
                 .ThenByDescending(t => t.LastUpdatedDate)
                 .ToList();
