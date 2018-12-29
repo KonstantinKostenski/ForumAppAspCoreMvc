@@ -4,6 +4,7 @@ using Forum.Data;
 using Forum.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Forum.Controllers
 {
@@ -51,6 +52,60 @@ namespace Forum.Controllers
                 context.SaveChanges();
 
                 return Redirect($"/Topic/Details/{comment.TopicId}");
+            }
+
+            return View(comment);
+        }
+
+        [Route("/Topic/Details/{TopicId}/Comment/Edit/{id}")]
+        public IActionResult Edit(int? topicId, int? id)
+        {
+            if (id == null)
+            {
+                RedirectPermanent($"Topic/Details/{topicId}");
+            }
+
+            Comment comment = context
+                .Comments
+                .Include(c => c.Author)
+                .Include(c => c.Topic)
+                .ThenInclude(t => t.Author)
+                .SingleOrDefault(c => c.CommentId == id);
+
+            if (comment == null)
+            {
+                RedirectPermanent($"Topic/Details/{topicId}");
+            }
+
+            return View(comment);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Topic/Details/{TopicId}/Comment/Edit/{id}")]
+        public IActionResult Edit(Comment comment)
+        {
+            if (ModelState.IsValid)
+            {
+                var commentFromDb = context
+                    .Comments
+                    .Include(c => c.Author)
+                    .SingleOrDefault(c => c.CommentId.Equals(comment.CommentId));
+
+                if (commentFromDb == null)
+                {
+                    return RedirectPermanent($"/Topic/Details/{comment.TopicId}");
+                }
+
+                commentFromDb.Description = comment.Description;
+                commentFromDb.LastUpdatedDate = DateTime.Now;
+
+                Topic topic = context.Topics.Find(comment.TopicId);
+                topic.LastUpdatedDate = DateTime.Now;
+
+                context.SaveChanges();
+
+                return RedirectPermanent($"/Topic/Details/{comment.TopicId}");
             }
 
             return View(comment);
