@@ -114,7 +114,10 @@ namespace Forum.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            Topic topic = context.Topics.Include(t => t.Author).Where(t => t.Id == id).SingleOrDefault();
+            Topic topic = context.Topics
+                .Include(t => t.Author)
+                .Where(t => t.Id == id)
+                .SingleOrDefault();
 
             if (topic == null)
             {
@@ -130,7 +133,11 @@ namespace Forum.Controllers
         {
             if (ModelState.IsValid)
             {
-                Topic topicFromDb = context.Topics.Include(t => t.Author).SingleOrDefault(t => t.Id.Equals(topic.Id));
+                Topic topicFromDb = context
+                    .Topics
+                    .Include(t => t.Author)
+                    .SingleOrDefault(t => t.Id
+                    .Equals(topic.Id));
 
                 if (topicFromDb == null)
                 {
