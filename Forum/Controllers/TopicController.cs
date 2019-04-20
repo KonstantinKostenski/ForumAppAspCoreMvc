@@ -24,7 +24,8 @@ namespace Forum.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            Topic topic = this.context.Topics
+            Topic topic = this.context
+                .Topics
                 .Include(t => t.Author)
                 .Include(t => t.Comments)
                 .ThenInclude(c => c.Author)
@@ -54,7 +55,8 @@ namespace Forum.Controllers
                 topic.CreatedDate = DateTime.Now;
                 topic.LastUpdatedDate = DateTime.Now;
 
-                string authorId = context.Users
+                string authorId = context
+                    .Users
                     .Where(u => u.UserName == User.Identity.Name)
                     .First()
                     .Id;
@@ -77,7 +79,8 @@ namespace Forum.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var topic = this.context.Topics
+            var topic = this.context
+                .Topics
                 .Include(t => t.Author)
                 .SingleOrDefault(m => m.Id == id);
 
@@ -93,7 +96,8 @@ namespace Forum.Controllers
         [Authorize]
         public IActionResult Delete(int id)
         {
-            Topic topic = this.context.Topics
+            Topic topic = this.context
+                .Topics
                 .Include(t => t.Author)
                 .SingleOrDefault(m => m.Id == id);
 
@@ -114,7 +118,8 @@ namespace Forum.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            Topic topic = context.Topics
+            Topic topic = context
+                .Topics
                 .Include(t => t.Author)
                 .Where(t => t.Id == id)
                 .SingleOrDefault();
